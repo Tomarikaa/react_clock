@@ -1,44 +1,46 @@
 import React from 'react';
 import './App.scss';
+import { Clock } from './components/Clock';
 
 function getRandomName(): string {
   const value = Date.now().toString().slice(-4);
-
   return `Clock-${value}`;
 }
 
 type State = {
   clockName: string;
   currentTime: string;
-  showClock: boolean;
+  hasClock: boolean;
 };
 
 export class App extends React.Component<{}, State> {
   intervalId: number | null = null;
-
   timerId: number | null = null;
 
   state: State = {
     clockName: 'Clock-0',
     currentTime: new Date().toUTCString().slice(-12, -4),
-    showClock: true,
+    hasClock: true,
   };
 
   componentDidMount() {
     this.startTimer();
     this.startClock();
+    document.addEventListener('contextmenu', this.handleRightClick);
+    document.addEventListener('click', this.handleLeftClick);
   }
 
   componentWillUnmount() {
     this.stopTimer();
     this.stopClock();
+    document.removeEventListener('contextmenu', this.handleRightClick);
+    document.removeEventListener('click', this.handleLeftClick);
   }
 
   startTimer() {
     this.intervalId = window.setInterval(() => {
       const oldName = this.state.clockName;
       const newName = getRandomName();
-
       this.setState({ clockName: newName });
       // eslint-disable-next-line no-console
       console.warn(`Renamed from ${oldName} to ${newName}`);
@@ -55,7 +57,6 @@ export class App extends React.Component<{}, State> {
   startClock() {
     this.timerId = window.setInterval(() => {
       const currentTime = new Date().toUTCString().slice(-12, -4);
-
       this.setState({ currentTime });
       // eslint-disable-next-line no-console
       console.log(currentTime);
@@ -69,32 +70,22 @@ export class App extends React.Component<{}, State> {
     }
   }
 
-  handleRightClick = (event: React.MouseEvent) => {
+  handleRightClick = (event: MouseEvent) => {
     event.preventDefault();
-    this.setState({ showClock: false });
+    this.setState({ hasClock: false });
   };
 
-  handleLeftClick = (event: React.MouseEvent) => {
-    event.preventDefault();
-    this.setState({ showClock: true });
+  handleLeftClick = () => {
+    this.setState({ hasClock: true });
   };
 
   render() {
-    const { clockName, currentTime, showClock } = this.state;
+    const { clockName, currentTime, hasClock } = this.state;
 
     return (
-      <div
-        className="App"
-        onContextMenu={this.handleRightClick}
-        onClick={this.handleLeftClick}
-      >
+      <div className="App">
         <h1>React clock</h1>
-        {showClock && (
-          <div className="Clock">
-            <strong className="Clock__name">{clockName}</strong> time is{' '}
-            <span className="Clock__time">{currentTime}</span>
-          </div>
-        )}
+        {hasClock && <Clock name={clockName} time={currentTime} />}
       </div>
     );
   }
