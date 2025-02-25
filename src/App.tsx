@@ -3,6 +3,7 @@ import './App.scss';
 
 function getRandomName(): string {
   const value = Date.now().toString().slice(-4);
+
   return `Clock-${value}`;
 }
 
@@ -14,6 +15,7 @@ type State = {
 
 export class App extends React.Component<{}, State> {
   intervalId: number | null = null;
+
   timerId: number | null = null;
 
   state: State = {
@@ -36,7 +38,9 @@ export class App extends React.Component<{}, State> {
     this.intervalId = window.setInterval(() => {
       const oldName = this.state.clockName;
       const newName = getRandomName();
+
       this.setState({ clockName: newName });
+      // eslint-disable-next-line no-console
       console.warn(`Renamed from ${oldName} to ${newName}`);
     }, 3300);
   }
@@ -51,6 +55,7 @@ export class App extends React.Component<{}, State> {
   startClock() {
     this.timerId = window.setInterval(() => {
       const currentTime = new Date().toUTCString().slice(-12, -4);
+
       this.setState({ currentTime });
       // eslint-disable-next-line no-console
       console.log(currentTime);
@@ -78,7 +83,11 @@ export class App extends React.Component<{}, State> {
     const { clockName, currentTime, showClock } = this.state;
 
     return (
-      <div className="App" onContextMenu={this.handleRightClick} onClick={this.handleLeftClick}>
+      <div
+        className="App"
+        onContextMenu={this.handleRightClick}
+        onClick={this.handleLeftClick}
+      >
         <h1>React clock</h1>
         {showClock && (
           <div className="Clock">
