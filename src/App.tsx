@@ -14,8 +14,8 @@ type State = {
 };
 
 export class App extends React.Component<{}, State> {
-  intervalId: number | null = null;
-  timerId: number | null = null;
+  intervalId: NodeJS.Timeout | null = null;
+  timerId: NodeJS.Timeout | null = null;
 
   state: State = {
     clockName: 'Clock-0',
@@ -38,7 +38,7 @@ export class App extends React.Component<{}, State> {
   }
 
   startTimer() {
-    this.intervalId = window.setInterval(() => {
+    this.intervalId = setInterval(() => {
       const oldName = this.state.clockName;
       const newName = getRandomName();
       this.setState({ clockName: newName });
@@ -49,13 +49,13 @@ export class App extends React.Component<{}, State> {
 
   stopTimer() {
     if (this.intervalId) {
-      window.clearInterval(this.intervalId);
+      clearInterval(this.intervalId);
       this.intervalId = null;
     }
   }
 
   startClock() {
-    this.timerId = window.setInterval(() => {
+    this.timerId = setInterval(() => {
       const currentTime = new Date().toUTCString().slice(-12, -4);
       this.setState({ currentTime });
       // eslint-disable-next-line no-console
@@ -65,7 +65,7 @@ export class App extends React.Component<{}, State> {
 
   stopClock() {
     if (this.timerId) {
-      window.clearInterval(this.timerId);
+      clearInterval(this.timerId);
       this.timerId = null;
     }
   }
